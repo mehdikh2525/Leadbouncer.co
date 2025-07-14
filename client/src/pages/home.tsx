@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,6 +35,7 @@ const stagger = {
 };
 
 export default function Home() {
+  const [, setLocation] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollToSection = (sectionId: string) => {
@@ -78,10 +80,17 @@ export default function Home() {
 
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="ghost" className="text-muted-foreground hover:text-primary">
+              <Button 
+                variant="ghost" 
+                className="text-muted-foreground hover:text-primary"
+                onClick={() => setLocation("/login")}
+              >
                 Sign In
               </Button>
-              <Button className="bg-primary hover:bg-primary/90">
+              <Button 
+                className="bg-primary hover:bg-primary/90"
+                onClick={() => setLocation("/signup")}
+              >
                 Start Free Trial
               </Button>
             </div>
@@ -123,10 +132,17 @@ export default function Home() {
                   Demo
                 </button>
                 <div className="flex flex-col space-y-2 pt-4">
-                  <Button variant="ghost" className="justify-start">
+                  <Button 
+                    variant="ghost" 
+                    className="justify-start"
+                    onClick={() => setLocation("/login")}
+                  >
                     Sign In
                   </Button>
-                  <Button className="bg-primary hover:bg-primary/90">
+                  <Button 
+                    className="bg-primary hover:bg-primary/90"
+                    onClick={() => setLocation("/signup")}
+                  >
                     Start Free Trial
                   </Button>
                 </div>
@@ -163,6 +179,7 @@ export default function Home() {
                 <Button 
                   size="lg" 
                   className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-lg"
+                  onClick={() => setLocation("/signup")}
                 >
                   Start Free Trial - $49/month
                 </Button>
@@ -170,6 +187,7 @@ export default function Home() {
                   size="lg" 
                   variant="outline" 
                   className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold text-lg"
+                  onClick={() => scrollToSection('demo')}
                 >
                   Book a Demo
                 </Button>
@@ -649,7 +667,11 @@ export default function Home() {
                       14-day free trial
                     </li>
                   </ul>
-                  <Button variant="outline" className="w-full">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setLocation("/signup")}
+                  >
                     Start Free Trial
                   </Button>
                 </CardContent>
@@ -685,7 +707,10 @@ export default function Home() {
                       Priority support
                     </li>
                   </ul>
-                  <Button className="w-full bg-accent hover:bg-accent/90">
+                  <Button 
+                    className="w-full bg-accent hover:bg-accent/90"
+                    onClick={() => setLocation("/signup")}
+                  >
                     Start Free Trial
                   </Button>
                 </CardContent>
@@ -822,6 +847,7 @@ export default function Home() {
               <Button 
                 size="lg" 
                 className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-lg"
+                onClick={() => setLocation("/signup")}
               >
                 Start Free Trial
               </Button>
@@ -829,6 +855,7 @@ export default function Home() {
                 size="lg" 
                 variant="outline" 
                 className="bg-white hover:bg-gray-100 text-primary border-white font-semibold text-lg"
+                onClick={() => scrollToSection('demo')}
               >
                 Book a Demo
               </Button>
