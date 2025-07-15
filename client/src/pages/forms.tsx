@@ -13,8 +13,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "@/components/theme-provider";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Home,
   FileText,
@@ -46,7 +48,9 @@ import {
   Globe,
   Activity,
   TrendingUp,
-  Filter
+  Filter,
+  Menu,
+  X
 } from "lucide-react";
 
 // Sample forms data
@@ -113,6 +117,7 @@ export default function Forms() {
   const [, setLocation] = useLocation();
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [user, setUser] = useState<any>(null);
   const [forms, setForms] = useState(formsData);
   const [searchTerm, setSearchTerm] = useState("");
@@ -120,6 +125,7 @@ export default function Forms() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [selectedForm, setSelectedForm] = useState<any>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [createFormData, setCreateFormData] = useState({
     name: "",
     description: "",
@@ -266,79 +272,105 @@ export default function Forms() {
     );
   }
 
-  return (
-    <div className="min-h-screen">
-      <div className="flex bg-background">
-        {/* Sidebar */}
-        <div className="w-64 bg-muted/30 border-r border-border flex flex-col">
-          <div className="p-6">
-            <h1 className="text-2xl font-bold text-primary">LeadBouncer</h1>
-          </div>
-          
-          <nav className="flex-1 px-4 space-y-2">
-            <Button 
-              variant="ghost" 
-              className="w-full justify-start"
-              onClick={() => setLocation("/dashboard")}
-            >
-              <Home className="w-4 h-4 mr-3" />
-              Dashboard
-            </Button>
-            <Button variant="secondary" className="w-full justify-start">
-              <FileText className="w-4 h-4 mr-3" />
-              Forms
-              <Badge className="ml-auto">{forms.length}</Badge>
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <Settings className="w-4 h-4 mr-3" />
-              Settings
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <CreditCard className="w-4 h-4 mr-3" />
-              Billing
-            </Button>
-            <Button variant="ghost" className="w-full justify-start">
-              <HelpCircle className="w-4 h-4 mr-3" />
-              Help & Support
-            </Button>
-          </nav>
+  // Sidebar content component
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full">
+      <div className="p-4 md:p-6">
+        <h1 className="text-xl md:text-2xl font-bold text-primary">LeadBouncer</h1>
+      </div>
+      
+      <nav className="flex-1 px-4 space-y-2">
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start"
+          onClick={() => {
+            setLocation("/dashboard");
+            setSidebarOpen(false);
+          }}
+        >
+          <Home className="w-4 h-4 mr-3" />
+          Dashboard
+        </Button>
+        <Button variant="secondary" className="w-full justify-start">
+          <FileText className="w-4 h-4 mr-3" />
+          Forms
+          <Badge className="ml-auto">{forms.length}</Badge>
+        </Button>
+        <Button variant="ghost" className="w-full justify-start">
+          <Settings className="w-4 h-4 mr-3" />
+          Settings
+        </Button>
+        <Button variant="ghost" className="w-full justify-start">
+          <CreditCard className="w-4 h-4 mr-3" />
+          Billing
+        </Button>
+        <Button variant="ghost" className="w-full justify-start">
+          <HelpCircle className="w-4 h-4 mr-3" />
+          Help & Support
+        </Button>
+      </nav>
 
-          <div className="p-4 border-t border-border">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-primary-foreground" />
-              </div>
-              <div>
-                <p className="font-medium text-sm">{user.name}</p>
-                <p className="text-xs text-muted-foreground">{user.email}</p>
-              </div>
-            </div>
-            <Button 
-              variant="ghost" 
-              className="w-full justify-start text-muted-foreground"
-              onClick={handleLogout}
-            >
-              <LogOut className="w-4 h-4 mr-3" />
-              Sign Out
-            </Button>
+      <div className="p-4 border-t border-border">
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+            <User className="w-4 h-4 text-primary-foreground" />
+          </div>
+          <div>
+            <p className="font-medium text-sm">{user.name}</p>
+            <p className="text-xs text-muted-foreground">{user.email}</p>
           </div>
         </div>
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start text-muted-foreground"
+          onClick={handleLogout}
+        >
+          <LogOut className="w-4 h-4 mr-3" />
+          Sign Out
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="flex">
+        {/* Desktop Sidebar */}
+        <div className="hidden md:flex w-64 bg-muted/30 border-r border-border flex-col">
+          <SidebarContent />
+        </div>
+
+        {/* Mobile Sidebar */}
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetContent side="left" className="w-64 p-0">
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
           {/* Header */}
           <header className="bg-background border-b border-border p-4 flex items-center justify-between">
-            <div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-1">
-                <span>Dashboard</span>
-                <ChevronRight className="w-4 h-4" />
-                <span>Forms</span>
+            <div className="flex items-center space-x-4">
+              <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="sm" className="md:hidden">
+                    <Menu className="w-5 h-5" />
+                  </Button>
+                </SheetTrigger>
+              </Sheet>
+              <div>
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-1">
+                  <span>Dashboard</span>
+                  <ChevronRight className="w-4 h-4" />
+                  <span>Forms</span>
+                </div>
+                <h2 className="text-xl md:text-2xl font-bold">Protected Forms</h2>
+                <p className="text-muted-foreground text-sm md:text-base">Manage your forms and generate embedding code</p>
               </div>
-              <h2 className="text-2xl font-bold">Protected Forms</h2>
-              <p className="text-muted-foreground">Manage your forms and generate embedding code</p>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
               <Button variant="ghost" size="sm">
                 <Bell className="w-4 h-4" />
               </Button>
@@ -353,9 +385,9 @@ export default function Forms() {
           </header>
 
           {/* Forms Content */}
-          <div className="flex-1 p-6 overflow-auto">
+          <div className="flex-1 p-4 md:p-6 overflow-auto">
             {/* Controls */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <div className="flex flex-col gap-4 mb-6 md:mb-8">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -366,21 +398,22 @@ export default function Forms() {
                 />
               </div>
               
-              <Tabs value={filterStatus} onValueChange={setFilterStatus} className="w-auto">
-                <TabsList>
-                  <TabsTrigger value="all">All Forms</TabsTrigger>
-                  <TabsTrigger value="active">Active</TabsTrigger>
-                  <TabsTrigger value="inactive">Inactive</TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+                <Tabs value={filterStatus} onValueChange={setFilterStatus} className="w-full sm:w-auto">
+                  <TabsList className="grid w-full grid-cols-3 sm:w-auto">
+                    <TabsTrigger value="all">All Forms</TabsTrigger>
+                    <TabsTrigger value="active">Active</TabsTrigger>
+                    <TabsTrigger value="inactive">Inactive</TabsTrigger>
+                  </TabsList>
+                </Tabs>
 
-              <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-                <DialogTrigger asChild>
-                  <Button className="bg-primary hover:bg-primary/90">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add New Form
-                  </Button>
-                </DialogTrigger>
+                <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add New Form
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
                     <DialogTitle>Create New Protected Form</DialogTitle>
@@ -466,7 +499,7 @@ export default function Forms() {
                 </Button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 {filteredForms.map((form) => (
                   <motion.div
                     key={form.id}
@@ -667,6 +700,7 @@ export default function Forms() {
           </Tabs>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }
