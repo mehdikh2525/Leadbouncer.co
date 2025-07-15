@@ -166,7 +166,11 @@ export default function Dashboard() {
               <Home className="w-4 h-4 mr-3" />
               Dashboard
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start"
+              onClick={() => setLocation("/forms")}
+            >
               <FileText className="w-4 h-4 mr-3" />
               Forms
               <Badge className="ml-auto">3</Badge>
